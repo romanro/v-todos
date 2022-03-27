@@ -11,7 +11,6 @@ export type Request = {
 
 export type GetRequest = Omit<Request, 'body' | 'method'>;
 export type DeleteRequest = { id: string } & Omit<Request, 'body'>;
-
 export type PostRequest = Omit<Request, 'method'>;
 
 export type QueryGetObject<T> = {

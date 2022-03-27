@@ -6,6 +6,7 @@ import { TodosList } from './ui/components/TodosList/TodosList';
 import { FiltersHeader } from './ui/components/FiltersHeader/FiltersHeader';
 import { CreateTodoFooter } from './ui/components/CreateTodoFooter/CreateTodoFooter';
 import { Todos } from './core/models';
+import { Preloader } from './common/components/Preloader';
 
 function App() {
     const [todos, setTodos] = useState<Todos>([]);
@@ -30,10 +31,9 @@ function App() {
         mutateTodos();
     };
 
-    return isLoading ? (
-        <h2>Loading...</h2>
-    ) : (
+    return (
         <div className='App'>
+            {isLoading && <Preloader />}
             <FiltersHeader />
             <TodosList todos={todos} refetchTodos={refetchTodos} />
             <CreateTodoFooter refetchTodos={refetchTodos} />

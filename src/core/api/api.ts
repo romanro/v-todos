@@ -37,7 +37,11 @@ export abstract class API {
         return this.request({ url, method: 'POST', body, headers });
     }
 
-    static delete<T extends unknown>({ url, headers, id }: DeleteRequest): Promise<T> {
+    static patch<T extends unknown>({ url, body, headers }: PostRequest): Promise<T> {
+        return this.request({ url, method: 'PATCH', body, headers });
+    }
+
+    static delete<T extends unknown>({ headers, id }: DeleteRequest): Promise<T> {
         return this.request({ url: `?records[]=${id}`, method: 'DELETE', headers });
     }
 }

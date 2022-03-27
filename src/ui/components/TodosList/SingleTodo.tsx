@@ -1,66 +1,32 @@
-import React, { FC, useMemo } from 'react';
-import { useMutation } from 'react-query';
-import styled from 'styled-components';
-import { deleteTodo } from '../../../core/api/todos/todos.api';
-import { Action, Todo, TodoId } from '../../../core/models/todo';
+import React, { FC } from 'react';
+import { DeleteButton, TextInput } from '../../../common/components';
+import Checkbox from '../../../common/components/Checkbox';
+import { useSingleTodoAction } from '../../../core/hooks';
+import { Todo } from '../../../core/models/todo';
+import { Tag, TagList, TodoWrapper } from './TodosList.styles';
 
 export interface SingleTodoProps {
     todo: Todo;
     refetchTodos: () => void;
 }
 
-const TodoWrapper = styled.div`
-    padding: 10px;
-    margin: 10px 0;
-    background: yellow;
-    box-shadow: 2px 2px 6px #000000;
-
-    .todoInfo {
-        display: flex;
-        justify-content: space-between;
-    }
-`;
-
-const TagList = styled.ul`
-    list-style: none;
-    padding: 0;
-`;
-
-const Tag = styled.li`
-    display: inline-block;
-    padding: 5px;
-    background: #fff;
-    border: 1px solid black;
-    border-radius: 10px;
-`;
-
 export const SingleTodo: FC<SingleTodoProps> = ({ todo, refetchTodos }) => {
-    const { id } = todo;
-    const { Text, Tags } = todo.fields;
+    const { fields } = todo;
+    const { Text, Status } = fields;
 
-    const ParsedTags: string[] = useMemo(() => JSON.parse(Tags) || [], [Tags]);
-
-    const { mutate, isLoading } = useMutation((id: string) => deleteTodo(id));
-
-    const handleDelete = (action: Action) => {
-        switch (action) {
-            case 'DELETE':
-                mutate(id, {
-                    onSuccess: (res) => {
-                        refetchTodos();
-                    },
-                });
-                break;
-        }
-    };
+    const { onDeleteIsLoading, onPatchIsLoading, newTagText, setNewTagText, ParsedTags, handleAction } =
+        useSingleTodoAction(todo, refetchTodos);
 
     return (
         <TodoWrapper>
             <div className='todoInfo'>
+                <Checkbox
+                    defaultChecked={Status === 'Done'}
+                    onChange={() => handleAction('TOGGLE_STATUS')}
+                    disabled={onPatchIsLoading}
+                />
                 <p>{Text}</p>
-                <button disabled={isLoading} onClick={() => handleDelete('DELETE')}>
-                    DELETE
-                </button>
+                <DeleteButton disabled={onDeleteIsLoading} onClick={() => handleAction('DELETE')} />
             </div>
             <div className='todoTags'>
                 <TagList>
@@ -68,6 +34,15 @@ export const SingleTodo: FC<SingleTodoProps> = ({ todo, refetchTodos }) => {
                         <Tag key={index}>{tag}</Tag>
                     ))}
                 </TagList>
+                <div className='inputWrapper'>
+                    <TextInput
+                        placeholder='add new tag'
+                        value={newTagText}
+                        disabled={onPatchIsLoading}
+                        onKeyDown={(e) => handleAction('ADD_NEW_TAG', e)}
+                        onChange={(e) => setNewTagText(e.target.value)}
+                    />
+                </div>
             </div>
         </TodoWrapper>
     );

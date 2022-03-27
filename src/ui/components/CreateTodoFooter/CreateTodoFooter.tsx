@@ -1,34 +1,32 @@
 import React, { FC, KeyboardEvent, useState } from 'react';
 import { useMutation } from 'react-query';
+import styled from 'styled-components';
+import { TextInput } from '../../../common/components';
 import { postNewTodo } from '../../../core/api';
-import { NewTodo } from '../../../core/models';
+import { createNewTodo } from '../../utils/todo.utils';
 
 interface CreateTodoFooterProps {
     refetchTodos: () => void;
 }
 
-const createNewTodo = (text: string): NewTodo => {
-    return {
-        fields: {
-            Text: text,
-            Tags: JSON.stringify([]),
-            Status: 'Todo',
-        },
-    };
-};
+const StyledCreateTodoFooter = styled.div`
+    padding: 20px;
+    padding-top: 0;
+`;
 
 export const CreateTodoFooter: FC<CreateTodoFooterProps> = ({ refetchTodos }) => {
-    const [newTagText, setNewTagText] = useState<string>('');
+    const [newTodoText, setNewTodoText] = useState<string>('');
 
     const { mutate, isLoading } = useMutation((todoText: string) => postNewTodo(createNewTodo(todoText)));
 
     const handleEnter = (e: KeyboardEvent<HTMLInputElement>) => {
+        e.stopPropagation();
         if (e.code === 'Enter' && !isLoading) {
-            if (newTagText) {
-                mutate(newTagText, {
+            if (newTodoText) {
+                mutate(newTodoText, {
                     onSuccess: () => {
                         refetchTodos?.();
-                        setNewTagText('');
+                        setNewTodoText('');
                     },
                 });
             }
@@ -36,14 +34,15 @@ export const CreateTodoFooter: FC<CreateTodoFooterProps> = ({ refetchTodos }) =>
     };
 
     return (
-        <div>
-            <input
-                type='text'
+        <StyledCreateTodoFooter>
+            <TextInput
+                placeholder='add new todo'
                 disabled={isLoading}
-                value={newTagText}
+                value={newTodoText}
                 onKeyDown={handleEnter}
-                onChange={(e) => setNewTagText(e.target.value)}
+                onChange={(e) => setNewTodoText(e.target.value)}
+                fullWidth
             />
-        </div>
+        </StyledCreateTodoFooter>
     );
 };

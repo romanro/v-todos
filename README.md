@@ -1,6 +1,6 @@
-# Getting Started with Create React App
+# The app is deployed to React Pages:
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+https://romanro.github.io/v-todos/
 
 ## Available Scripts
 

@@ -1,8 +1,9 @@
 import { useMutation } from 'react-query';
-import { createPatchTodo } from '../../ui/utils/todo.utils';
+import { createPatchTodo, processTagString } from '../../ui/utils/todo.utils';
 import { deleteTodo, patchTodo } from '../api';
 import { Action, PatchTodo, Todo } from '../models';
 import { KeyboardEvent, useMemo, useState } from 'react';
+import { END_TAGS_SYMBOL, SUBTAG_SYMBOL } from '../consts/tags.consts';
 
 export const useSingleTodoAction = (todo: Todo, refetchTodos: () => void) => {
     const { id, fields } = todo;
@@ -44,7 +45,7 @@ export const useSingleTodoAction = (todo: Todo, refetchTodos: () => void) => {
                 if (e?.code === 'Enter' && trimmed && !ParsedTags.includes(trimmed)) {
                     const patchTodo: PatchTodo = createPatchTodo(id, {
                         Text,
-                        Tags: JSON.stringify([...ParsedTags, newTagText.trim()]),
+                        Tags: JSON.stringify([...ParsedTags, `${processTagString(newTagText)}${END_TAGS_SYMBOL}`]),
                         Status,
                     });
                     onPatch(patchTodo, {

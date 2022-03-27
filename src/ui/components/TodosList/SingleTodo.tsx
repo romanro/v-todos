@@ -1,6 +1,7 @@
 import React, { FC } from 'react';
 import { DeleteButton, TextInput } from '../../../common/components';
 import Checkbox from '../../../common/components/Checkbox';
+import { END_TAGS_SYMBOL } from '../../../core/consts/tags.consts';
 import { useSingleTodoAction } from '../../../core/hooks';
 import { Todo } from '../../../core/models/todo';
 import { Tag, TagList, TodoWrapper } from './TodosList.styles';
@@ -31,7 +32,7 @@ export const SingleTodo: FC<SingleTodoProps> = ({ todo, refetchTodos }) => {
             <div className='todoTags'>
                 <TagList>
                     {ParsedTags.map((tag, index) => (
-                        <Tag key={index}>{tag}</Tag>
+                        <Tag key={index}>{tag.replace(END_TAGS_SYMBOL, '')}</Tag>
                     ))}
                 </TagList>
                 <div className='inputWrapper'>
@@ -39,6 +40,7 @@ export const SingleTodo: FC<SingleTodoProps> = ({ todo, refetchTodos }) => {
                         placeholder='add new tag'
                         value={newTagText}
                         disabled={onPatchIsLoading}
+                        helperText='use comma or space to create subtags'
                         onKeyDown={(e) => handleAction('ADD_NEW_TAG', e)}
                         onChange={(e) => setNewTagText(e.target.value)}
                     />
